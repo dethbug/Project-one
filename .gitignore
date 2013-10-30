@@ -4,3 +4,101 @@
 *.jar
 *.war
 *.ear
+import de.voidplus.leapmotion.*;
+
+LeapMotion leap;
+
+void setup(){
+  size(800, 500, P3D);
+  background(255);
+  noStroke(); fill(50);
+  // ...
+    
+  leap = new LeapMotion(this);
+}
+
+void draw(){
+  background(255);
+  // ...
+  int fps = leap.getFrameRate();
+  
+  // HANDS
+  for(Hand hand : leap.getHands()){
+
+    hand.draw();
+    int     hand_id          = hand.getId(); //sincremente a chaque fois que tenleve et remet
+    PVector hand_position    = hand.getPosition();
+    PVector hand_stabilized  = hand.getStabilizedPosition();
+    PVector hand_direction   = hand.getDirection(); //pour diriger la direction de la main
+    PVector hand_dynamics    = hand.getDynamics(); //savoir si main se deplace ou pas
+    float   hand_roll        = hand.getRoll(); //tourner sur laxe z 
+    float   hand_pitch       = hand.getPitch(); //x
+    float   hand_yaw         = hand.getYaw(); // y
+    float   hand_time        = hand.getTimeVisible(); // compteur qui defile tant que main edtectee
+    PVector sphere_position  = hand.getSpherePosition(); //données qui sont transmisse par les .draw() de la main
+    float   sphere_radius    = hand.getSphereRadius(); // rayon de la spehere de la main
+    
+    //println(hand_stabilized.mag());
+    
+    // FINGERS
+    for(Finger finger : hand.getFingers()){
+      
+      // Basics
+      finger.draw();
+      int     finger_id         = finger.getId();
+      PVector finger_position   = finger.getPosition();
+      PVector finger_stabilized = finger.getStabilizedPosition();
+      PVector finger_velocity   = finger.getVelocity(); //vitesse de deplacement de ton doigt
+      PVector finger_direction  = finger.getDirection();
+      float   finger_time       = finger.getTimeVisible();
+      
+       //println(finger_position.mag());
+      
+      // Touch Emulation
+      int     touch_zone        = finger.getTouchZone(); // detecter la valeur de -1, 0 ou 1 de sit tes avant pendant ou dehors de la touch zone
+      float   touch_distance    = finger.getTouchDistance(); //distance entre point detecter et le centre du leap
+      
+      switch(touch_zone){
+        case -1: // None
+          break;
+        case 0: // Hovering
+          // println("Hovering (#"+finger_id+"): "+touch_distance);
+          break;
+        case 1: // Touching
+          // println("Touching (#"+finger_id+")");
+          break;
+      }
+    }
+    
+    // TOOLS
+    for(Tool tool : hand.getTools()){ //objets a mettre dans la mains
+      
+      // Basics
+      tool.draw();
+      int     tool_id           = tool.getId();
+      PVector tool_position     = tool.getPosition();
+      PVector tool_stabilized   = tool.getStabilizedPosition();
+      PVector tool_velocity     = tool.getVelocity();
+      PVector tool_direction    = tool.getDirection();
+      float   tool_time         = tool.getTimeVisible();
+      boolean tool_valid        = tool.isValid();
+      
+      println(tool_valid); // boleean qui dit c valide je peux detecter ou je peux pas
+      
+      // Touch Emulation
+      int     touch_zone        = tool.getTouchZone();
+      float   touch_distance    = tool.getTouchDistance();
+      
+      switch(touch_zone){
+        case -1: // None
+          break;
+        case 0: // Hovering
+          // println("Hovering (#"+tool_id+"): "+touch_distance);
+          break;
+        case 1: // Touching
+          // println("Touching (#"+tool_id+")");
+          break;
+      }
+    }
+    
+  }
